@@ -10,67 +10,92 @@ import java.util.List;
 
 public class TinySearchEngine implements TinySearchEngineBase {
 
-    private ArrayList<WordOccurrences> index = new ArrayList<WordOccurrences>();
+    private ArrayList<WordOccurrences> searchIndexList = new ArrayList<WordOccurrences>();
 
     public void insert(Word word, Attributes attributes) {
-        WordAttrDOT wordAttrDOT = new WordAttrDOT(word, attributes);
-        binaryAdd(wordAttrDOT);
+        WordAttrDOT wordAttrDOT = new WordAttrDOT(word, attributes);    // Creates a word+attr wrapper
+        binaryAdd(wordAttrDOT);     //Adds the word and it's occurrences to "searchIndexList"
+//        linearAdd(wordAttrDOT);     //Adds the word and it's occurrences to "searchIndexList"
     }
 
-    private void binaryAdd(WordAttrDOT wat) {
-        if (index.size() == 0)
-            addToIndexing(wat, 0);
+    /**
+     * This method uses a binary search method to add elements to the list.
+     * That way the list is already sorted when it's done building.
+     * @param wordAttr
+     */
+    private void binaryAdd(WordAttrDOT wordAttr) {
+        if (searchIndexList.size() == 0) {
+            addToIndexing(wordAttr, 0);
+            return;
+        }
 
-        String word = wat.getWord().word;
+        String word = wordAttr.getWord().word;
         int lo = 0;
-        int hi = index.size() - 1;
-        int mid = 0;
+        int hi = searchIndexList.size() - 1;
+        int mid = lo + ((hi-lo)/2);
+
         while (lo <= hi) {
-            mid = lo + (hi - lo) / 2;
-            String existingWord = index.get(mid).getWord().word;
-            if (existingWord.compareTo(word) > 0) {    // The target word is in the left half
+            mid = lo + (hi-lo) / 2;
+            String wordInArray = searchIndexList.get(mid).getWord().word;
+            if (wordInArray.compareToIgnoreCase(word) > 0) {
+                // The target word is in the left half
                 hi = mid - 1;
-            } else if (existingWord.compareTo(word) < 0) {     // The target word is in the left half
+            } else if (wordInArray.compareToIgnoreCase(word) < 0) {
+                // The target word is in the right half
                 lo = mid + 1;
-            } else { // The index for the word is found
-                addToIndexing(wat, mid);
+            } else {
+                addToIndexing(wordAttr, mid);
                 return;
             }
         }
-        addToIndexing(wat, mid);
+        addToIndexing(wordAttr, lo);
     }
 
     private void addToIndexing(WordAttrDOT wat, int i) {
-        if (this.index.size() == 0) {
-            index.add(new WordOccurrences(wat.getWord(), wat.getAttributes()));
+        if (this.searchIndexList.size() == 0 || this.searchIndexList.size() == i) {
+            searchIndexList.add(new WordOccurrences(wat));
+            return;
         }
 
-        if (this.index.get(i).getWord().word.equalsIgnoreCase(wat.getWord().word)) {
-            System.out.println("Occurance updated");
-            this.index.get(i).addOccurrence(wat.getAttributes());
+        if (this.searchIndexList.get(i).getWord().word.equalsIgnoreCase(wat.getWord().word)) {
+            this.searchIndexList.get(i).addOccurrence(wat.getAttributes());
         } else {
-            System.out.println("Simply added");
-            this.index.add(i, new WordOccurrences(wat.getWord(), wat.getAttributes()));
+            this.searchIndexList.add(i, new WordOccurrences(wat));
         }
+    }
+
+    public boolean isSorted() {
+        for (int i = 0; i < this.searchIndexList.size() - 2; i++) {
+            if (searchIndexList.get(i).getWord().word.compareToIgnoreCase(searchIndexList.get(i+1).getWord().word) > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public List<Document> search(String s) {
-        System.out.println("Searching for " + s);
-        List<Document> list = new ArrayList<Document>();
+        System.out.println("Sorted: " + isSorted());
 
-        int lo = 0, hi = index.size() - 1, mid = 0;
-        if (index.size() == 0)
+        int lo = 0, hi = searchIndexList.size() - 1, mid = 0;
+        if (searchIndexList.size() == 0)
             return null;
+
         while (lo <= hi) {
             mid = lo + (hi - lo) / 2;
-            if (index.get(mid).getWord().word.compareTo(s) > 0) {    // The target word is in the left half
+            String wordInArray = searchIndexList.get(mid).getWord().word;
+            if (wordInArray.compareToIgnoreCase(s) > 0) {
+                // The target word is in the left half
                 hi = mid - 1;
-            } else if (index.get(mid).getWord().word.compareTo(s) < 0) {     // The target word is in the left half
+            } else if (wordInArray.compareToIgnoreCase(s) < 0) {
+                // The target word is in the right half
                 lo = mid + 1;
-            } else { // The word is found
-                return index.get(mid).getDocuments();
+            } else {
+                // The word is found
+                return searchIndexList.get(mid).getDocuments();
             }
         }
-        return null;
+        return searchIndexList.get(mid).getDocuments();
+//        return null;
     }
+
 }

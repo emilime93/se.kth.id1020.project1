@@ -13,16 +13,9 @@ public class WordOccurrences {
     private AttributeOccurrences attributeOccurrences;
     private int wordCount;
 
-    public WordOccurrences(Word word, Attributes attributeOccurences) {
-        this.word = word;
-        this.attributeOccurrences = new AttributeOccurrences(attributeOccurences);
-        wordCount++;
-    }
-
-    public void addWord(WordAttrDOT wordToAdd) {
-        if (this.word == null) {
-            this.word = wordToAdd.getWord();
-        }
+    public WordOccurrences(WordAttrDOT wordAttr) {
+        this.word = wordAttr.getWord();
+        this.attributeOccurrences = new AttributeOccurrences(wordAttr.getAttributes());
         wordCount++;
     }
 
@@ -30,19 +23,26 @@ public class WordOccurrences {
         return word;
     }
 
-    public void addOccurrence(Attributes attributes) {
-        attributeOccurrences.addOccurrence(attributes);
+    public int getWordCount() {
+        return wordCount;
     }
 
-    public ArrayList<Attributes> getOccurrences() {
+    public void addOccurrence(Attributes attributes) {
+        attributeOccurrences.addOccurrence(attributes);
+        wordCount++;
+
+    }
+
+    public List<Attributes> getOccurrences() {
         return this.attributeOccurrences.getOccurrences();
     }
 
     public List<Document> getDocuments() {
         List<Document> list = new ArrayList<Document>();
-        List <Attributes> attrList = attributeOccurrences.getOccurrences();
+        List<Attributes> attrList = getOccurrences();
         for (int i = 0; i < attrList.size(); i++) {
             Document document = attrList.get(i).document;
+//            System.out.printf("%s is already in list?: %b\n", document, !attrList.contains(document));
             if (!attrList.contains(document)) {
                 list.add(document);
             }
