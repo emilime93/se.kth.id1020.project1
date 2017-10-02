@@ -40,9 +40,9 @@ public class WordOccurrences {
     public List<Document> getDocuments() {
         List<Document> list = new ArrayList<Document>();
         List<Attributes> attrList = getOccurrences();
+
         for (int i = 0; i < attrList.size(); i++) {
             Document document = attrList.get(i).document;
-//            System.out.printf("%s is already in list?: %b\n", document, !attrList.contains(document));
             if (!attrList.contains(document)) {
                 list.add(document);
             }

@@ -9,19 +9,19 @@ public class AttributeOccurrences {
 
     List<Attributes> list = new ArrayList<Attributes>();
 
-    public AttributeOccurrences(Attributes attributeOccurences) {
-        list.add(attributeOccurences);
+    public AttributeOccurrences(Attributes attributeOccurrences) {
+        list.add(attributeOccurrences);
     }
 
     public void addOccurrence(Attributes attributes) {
+        for (Attributes attr : list) {
+            if (attr.document.name.equalsIgnoreCase(attributes.document.name))
+                return;
+        }
         list.add(attributes);
     }
 
     public List<Attributes> getOccurrences() {
         return list;
-    }
-
-    public int getNumberOfOccurrences() {
-        return list.size();
     }
 }

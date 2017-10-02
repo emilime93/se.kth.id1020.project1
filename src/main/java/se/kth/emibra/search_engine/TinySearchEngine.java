@@ -21,7 +21,7 @@ public class TinySearchEngine implements TinySearchEngineBase {
     /**
      * This method uses a binary search method to add elements to the list.
      * That way the list is already sorted when it's done building.
-     * @param wordAttr
+     * @param wordAttr The word, and its attributes to search for
      */
     private void binaryAdd(WordAttrDOT wordAttr) {
         if (searchIndexList.size() == 0) {
@@ -32,7 +32,7 @@ public class TinySearchEngine implements TinySearchEngineBase {
         String word = wordAttr.getWord().word;
         int lo = 0;
         int hi = searchIndexList.size() - 1;
-        int mid = lo + ((hi-lo)/2);
+        int mid;
 
         while (lo <= hi) {
             mid = lo + (hi-lo) / 2;
@@ -64,7 +64,7 @@ public class TinySearchEngine implements TinySearchEngineBase {
         }
     }
 
-    public boolean isSorted() {
+    private boolean isSorted() {
         for (int i = 0; i < this.searchIndexList.size() - 2; i++) {
             if (searchIndexList.get(i).getWord().word.compareToIgnoreCase(searchIndexList.get(i+1).getWord().word) > 0) {
                 return false;
@@ -74,8 +74,6 @@ public class TinySearchEngine implements TinySearchEngineBase {
     }
 
     public List<Document> search(String s) {
-        System.out.println("Sorted: " + isSorted());
-
         int lo = 0, hi = searchIndexList.size() - 1, mid = 0;
         if (searchIndexList.size() == 0)
             return null;
