@@ -92,8 +92,8 @@ public class TinySearchEngine implements TinySearchEngineBase {
                 return searchIndexList.get(mid).getDocuments();
             }
         }
-        return searchIndexList.get(mid).getDocuments();
-//        return null;
+//        return searchIndexList.get(mid).getDocuments();
+        return null;
     }
 
 }
